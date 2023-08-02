@@ -1,0 +1,16 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/implements
+implements.so
+implements.dylib
+implements.dll
+implements.a
+implements.lib
+implements-test-*
+*.exe
+*.pdb
+*.o
+*.obj
+*.lst
