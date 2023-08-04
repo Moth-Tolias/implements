@@ -134,12 +134,9 @@ bool parametersMatch(alias Implementation, alias Interface)()
 
 @nogc nothrow pure @safe unittest
 {
-	void foof(in int _);
-	void barf(int _);
-	static assert(parametersMatch!(foof, barf));
+	void foo(in int _);
+	void bar(int _);
 
-	void baz1(int _);
-	void baz2(in int _);
-
-	static assert(!parametersMatch!(baz1, baz2));
+	static assert(parametersMatch!(foo, bar));
+	static assert(!parametersMatch!(bar, foo));
 }
