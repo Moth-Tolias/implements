@@ -103,7 +103,6 @@ private bool hasAttributes(alias Implementation, alias Interface)()
 	static assert(hasAttributes!(baz, bar));
 	static assert(!hasAttributes!(bar, baz));
 	static assert(!hasAttributes!(foo, baz));
-
 }
 
 private bool parametersMatch(alias Implementation, alias Interface)()
