@@ -4,6 +4,7 @@ void main()
 {
 }
 
+///
 bool implements(T, Interface)()
 {
 	bool result = true;
@@ -34,6 +35,7 @@ bool implements(T, Interface)()
 	return result;
 }
 
+///
 @nogc nothrow pure @safe unittest
 {
 	interface Bar
@@ -55,7 +57,7 @@ bool implements(T, Interface)()
 
 		int baz(int v) @nogc
 		{
-			return 69;
+			return v;
 		}
 	}
 
@@ -63,7 +65,7 @@ bool implements(T, Interface)()
 	static assert(implements!(Foo, Pepis));
 }
 
-bool hasAttributes(alias Implementation, alias Interface)()
+private bool hasAttributes(alias Implementation, alias Interface)()
 {
 	enum interfaceAttributes = __traits(getFunctionAttributes, Interface);
 	enum implementationAttributes = __traits(getFunctionAttributes, Implementation);
@@ -72,6 +74,7 @@ bool hasAttributes(alias Implementation, alias Interface)()
 	static foreach (interfaceAttribute; interfaceAttributes)
 	{
 		import std.algorithm.comparison: among;
+
 		switch (interfaceAttribute)
 		{
 		case "@safe":
@@ -105,20 +108,23 @@ bool hasAttributes(alias Implementation, alias Interface)()
 
 }
 
-bool parametersMatch(alias Implementation, alias Interface)()
+private bool parametersMatch(alias Implementation, alias Interface)()
 {
 	bool result = true;
 
 	import std.traits: Parameters;
+
 	static if (Parameters!(Implementation).length == Parameters!(Interface).length)
 	{
 		static foreach (index, InterfaceType; Parameters!(Interface))
 		{
 			import std.traits: isAssignable;
+
 			result &= isAssignable!(InterfaceType, Parameters!(Implementation)[index]);
 			static foreach (storageClass; __traits(getParameterStorageClasses, Interface, index))
 			{
 				import std.algorithm.comparison: among;
+
 				result &= storageClass.among(__traits(getParameterStorageClasses,
 						Implementation, index)) > 0;
 			}
