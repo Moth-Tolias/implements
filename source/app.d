@@ -5,19 +5,20 @@ void main()
 }
 
 ///
-bool implements(T, Interface)()
+bool implements(Implementation, Interface)()
 {
 	bool result = true;
 	static foreach (member; __traits(allMembers, Interface))
 	{
-		static if (__traits(hasMember, T, member))
+		static if (__traits(hasMember, Implementation, member))
 		{
 			bool subresult = false;
-			foreach (overload; __traits(getOverloads, T, member))
+			alias interfaceMember = __traits(getMember, Interface, member);
+			foreach (overload; __traits(getOverloads, Implementation, member))
 			{
-				if (parametersMatch!(overload, __traits(getMember, Interface, member)))
+				if (parametersMatch!(overload, interfaceMember))
 				{
-					if (hasAttributes!(overload, __traits(getMember, Interface, member)))
+					if (hasAttributes!(overload, interfaceMember))
 					{
 						subresult |= true;
 					}
@@ -38,37 +39,37 @@ bool implements(T, Interface)()
 ///
 @nogc nothrow pure @safe unittest
 {
+	interface Foo
+	{
+		int f(in int value) @safe;
+	}
+
 	interface Bar
 	{
-		int baz(in int value) @safe;
+		string f(string v);
 	}
 
-	interface Pepis
+	interface Baz
 	{
-		string baz(string v);
+		int x();
 	}
 
-	struct Foo
+	struct S
 	{
-		string baz(string v) @safe
-		{
-			return v;
-		}
-
-		int baz(int v) @nogc
-		{
-			return v;
-		}
+		string f(string v) @safe;
+		int f(int _) @nogc;
+		int f(int _, int _) @safe;
 	}
 
-	static assert(!implements!(Foo, Bar));
-	static assert(implements!(Foo, Pepis));
+	static assert(!implements!(S, Foo));
+	static assert(implements!(S, Bar));
+	static assert(!implements!(S, Baz));
 }
 
 private bool hasAttributes(alias Implementation, alias Interface)()
 {
-	enum interfaceAttributes = __traits(getFunctionAttributes, Interface);
-	enum implementationAttributes = __traits(getFunctionAttributes, Implementation);
+	immutable interfaceAttributes = __traits(getFunctionAttributes, Interface);
+	immutable implementationAttributes = __traits(getFunctionAttributes, Implementation);
 
 	bool result = true;
 	foreach (interfaceAttribute; interfaceAttributes)
@@ -128,8 +129,8 @@ private bool parametersMatch(alias Implementation, alias Interface)()
 				result &= storageClass.among(__traits(getParameterStorageClasses,
 						Implementation, index)) > 0;
 			}
-
 		}
+
 		return result;
 	}
 	else
