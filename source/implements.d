@@ -1,8 +1,5 @@
+///
 module implements;
-
-void main()
-{
-}
 
 ///
 bool implements(Implementation, Interface)()
