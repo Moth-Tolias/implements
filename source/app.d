@@ -13,11 +13,11 @@ bool implements(T, Interface)()
 		static if (__traits(hasMember, T, member))
 		{
 			bool subresult = false;
-			static foreach (overload; __traits(getOverloads, T, member))
+			foreach (overload; __traits(getOverloads, T, member))
 			{
-				static if (parametersMatch!(overload, __traits(getMember, Interface, member)))
+				if (parametersMatch!(overload, __traits(getMember, Interface, member)))
 				{
-					static if (hasAttributes!(overload, __traits(getMember, Interface, member)))
+					if (hasAttributes!(overload, __traits(getMember, Interface, member)))
 					{
 						subresult |= true;
 					}
@@ -71,7 +71,7 @@ private bool hasAttributes(alias Implementation, alias Interface)()
 	enum implementationAttributes = __traits(getFunctionAttributes, Implementation);
 
 	bool result = true;
-	static foreach (interfaceAttribute; interfaceAttributes)
+	foreach (interfaceAttribute; interfaceAttributes)
 	{
 		import std.algorithm.comparison: among;
 
@@ -114,14 +114,14 @@ private bool parametersMatch(alias Implementation, alias Interface)()
 
 	import std.traits: Parameters;
 
-	static if (Parameters!(Implementation).length == Parameters!(Interface).length)
+	if (Parameters!(Implementation).length == Parameters!(Interface).length)
 	{
-		static foreach (index, InterfaceType; Parameters!(Interface))
+		foreach (index, InterfaceType; Parameters!(Interface))
 		{
 			import std.traits: isAssignable;
 
 			result &= isAssignable!(InterfaceType, Parameters!(Implementation)[index]);
-			static foreach (storageClass; __traits(getParameterStorageClasses, Interface, index))
+			foreach (storageClass; __traits(getParameterStorageClasses, Interface, index))
 			{
 				import std.algorithm.comparison: among;
 
